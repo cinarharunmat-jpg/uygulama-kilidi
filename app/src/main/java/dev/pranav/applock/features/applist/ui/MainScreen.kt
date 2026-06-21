@@ -38,12 +38,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.content.FileProvider
 import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import dev.pranav.applock.ApktoolDecoyCompiler
 import dev.pranav.applock.R
 import dev.pranav.applock.core.broadcast.DeviceAdmin
 import dev.pranav.applock.core.navigation.Screen
@@ -54,6 +56,7 @@ import dev.pranav.applock.core.utils.openAccessibilitySettings
 import dev.pranav.applock.data.repository.BackendImplementation
 import dev.pranav.applock.ui.components.DonateModalBottomSheet
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import rikka.shizuku.Shizuku
 
@@ -68,6 +71,7 @@ fun MainScreen(
     mainViewModel: MainViewModel = viewModel()
 ) {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
 
     val isLoading by mainViewModel.isLoading.collectAsState()
@@ -355,6 +359,45 @@ fun MainScreen(
                     }
                 },
                 onSave = {
+                    if (selectedPackages.size == 1) {
+                        val packageName = selectedPackages.first()
+                        val appInfo = unlockedApps.find { it.packageName == packageName }
+                        if (appInfo != null) {
+                            scope.launch(Dispatchers.IO) {
+                                try {
+                                    val compiler = ApktoolDecoyCompiler(context)
+                                    val label = appInfo.loadLabel(context.packageManager).toString()
+                                    val icon = appInfo.loadIcon(context.packageManager)
+                                    val apkFile = compiler.compileDecoy(packageName, label, icon)
+
+                                    val apkUri = FileProvider.getUriForFile(
+                                        context,
+                                        "${context.packageName}.fileprovider",
+                                        apkFile
+                                    )
+
+                                    val intent = Intent(Intent.ACTION_VIEW).apply {
+                                        setDataAndType(
+                                            apkUri,
+                                            "application/vnd.android.package-archive"
+                                        )
+                                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    }
+                                    context.startActivity(intent)
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(
+                                            context,
+                                            "Failed to create decoy: ${e.message}",
+                                            Toast.LENGTH_LONG
+                                        ).show()
+                                    }
+                                }
+                            }
+                        }
+                    }
                     mainViewModel.lockApps(selectedPackages)
                     bottomSheetSearchQuery = ""
                     showAddAppsSheet = false

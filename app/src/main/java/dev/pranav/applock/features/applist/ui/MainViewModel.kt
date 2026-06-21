@@ -1,9 +1,14 @@
 package dev.pranav.applock.features.applist.ui
 
 import android.app.Application
+import android.app.admin.DevicePolicyManager
+import android.content.ComponentName
+import android.content.Context
 import android.content.pm.ApplicationInfo
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.application
 import androidx.lifecycle.viewModelScope
+import dev.pranav.applock.core.broadcast.DeviceAdmin
 import dev.pranav.applock.data.repository.AppLockRepository
 import dev.pranav.applock.features.applist.domain.AppSearchManager
 import kotlinx.coroutines.Dispatchers
@@ -94,6 +99,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun lockApps(packageNames: List<String>) {
         appLockRepository.addMultipleLockedApps(packageNames.toSet())
         _lockedApps.value = appLockRepository.getLockedApps()
+
+        val dpm =
+            application.getSystemService(Context.DEVICE_POLICY_SERVICE) as DevicePolicyManager
+        val component = ComponentName(application, DeviceAdmin::class.java)
+
+        //for (packageName in packageNames) {
+        //    dpm.setApplicationHidden(component, packageName, true)
+        //
+        //
+        //}
     }
 
     fun unlockApp(packageName: String) {

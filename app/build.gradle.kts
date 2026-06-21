@@ -50,6 +50,8 @@ android {
         includeInApk = false
         includeInBundle = false
     }
+
+    packaging { jniLibs { useLegacyPackaging = true } }
 }
 
 dependencies {
@@ -74,7 +76,28 @@ dependencies {
     implementation(libs.hiddenapibypass)
     implementation(project(":patternlock"))
 
+    implementation("com.github.apk-editor:aXML:dc872da9af")
+    implementation(files("libs/apktool-lib.jar"))
+    implementation(files("libs/brut.j.util.jar"))
+    implementation("org.apktool:brut.j.common:3.0.2")
+    implementation("org.apktool:brut.j.dir:3.0.2") {
+        isTransitive = false
+    }
+    implementation("org.apktool:brut.j.xml:3.0.2")
+    implementation("org.apktool:brut.j.yaml:3.0.2")
+    implementation("com.github.iBotPeaches.smali:smali-baksmali:b6365a84f4")
+    implementation("com.github.iBotPeaches.smali:smali:b6365a84f4")
+    implementation("com.google.guava:guava:33.6.0-android")
+    implementation("org.apache.commons:commons-compress:1.28.0")
+    implementation("commons-io:commons-io:2.22.0")
+    implementation("org.apache.commons:commons-text:1.15.0")
+    implementation("ar.com.hjg:pngj:2.1.0")
 
+
+    implementation(files("libs/apktool-android-1.0.0.aar"))
+
+    implementation("com.android.tools.build:apksig:9.2.1")
+    implementation("org.conscrypt:conscrypt-android:2.5.3")
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
