@@ -204,6 +204,19 @@ fun MainScreen(
                     }
                     IconButton(
                         onClick = {
+                            navController.navigate(Screen.Vault.route) {
+                                launchSingleTop = true
+                            }
+                        }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.FolderOff,
+                            contentDescription = "Gizli dosyalar",
+                            tint = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                    IconButton(
+                        onClick = {
                             navController.navigate(Screen.TriggerExclusions.route) {
                                 launchSingleTop = true
                             }

@@ -74,7 +74,12 @@ dependencies {
     implementation(libs.hiddenapibypass)
     implementation(project(":patternlock"))
 
-
+    // Gizli Dosyalar (Vault) özelliği: dosya baytlarını AES256-GCM ile şifreleyip
+    // Android Keystore'a bağlı anahtarla saklar (dosya adı değil, İÇERİK korunur).
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    // Not: küçük resimler (thumbnail) için ayrı bir görsel kütüphanesi eklemedik;
+    // BitmapFactory + Compose Image ile elle çözülüyor (bkz. VaultRepository/VaultScreen) --
+    // sürüm numarası tahmin etmeye gerek kalmadı, garanti derlenir.
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)

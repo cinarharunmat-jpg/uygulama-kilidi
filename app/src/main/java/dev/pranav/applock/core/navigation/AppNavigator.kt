@@ -29,6 +29,7 @@ import dev.pranav.applock.features.setpassword.ui.PatternSetPasswordScreen
 import dev.pranav.applock.features.setpassword.ui.SetPasswordScreen
 import dev.pranav.applock.features.settings.ui.SettingsScreen
 import dev.pranav.applock.features.triggerexclusions.ui.TriggerExclusionsScreen
+import dev.pranav.applock.features.vault.ui.VaultScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController, startDestination: String) {
@@ -139,6 +140,10 @@ fun AppNavHost(navController: NavHostController, startDestination: String) {
 
         composable(Screen.AntiUninstall.route) {
             AntiUninstallScreen(navController)
+        }
+
+        composable(Screen.Vault.route) {
+            VaultScreen(navController)
         }
     }
 }
