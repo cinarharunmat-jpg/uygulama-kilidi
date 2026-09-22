@@ -213,9 +213,9 @@ fun PatternSetPasswordScreen(
                 ) {
                     Text(
                         text = when {
-                            isVerifyOldPasswordMode -> "Enter current Pattern"
-                            isConfirmationMode -> "Confirm pattern"
-                            else -> "Create a pattern"
+                            isVerifyOldPasswordMode -> "Mevcut deseni girin"
+                            isConfirmationMode -> "Deseni onayla"
+                            else -> "Bir desen oluştur"
                         },
                         style = MaterialTheme.typography.titleMedium,
                         textAlign = TextAlign.Center

@@ -211,7 +211,7 @@ fun MainScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Block,
-                            contentDescription = "Trigger exclusions",
+                            contentDescription = "Tetikleme istisnaları",
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -224,7 +224,7 @@ fun MainScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Outlined.Lock,
-                            contentDescription = "Anti-Uninstall",
+                            contentDescription = "Kaldırmaya karşı koruma",
                             tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
@@ -496,7 +496,7 @@ private fun AddProtectedAppsSheetContent(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Select Apps",
+                text = "Uygulamaları Seç",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -504,7 +504,7 @@ private fun AddProtectedAppsSheetContent(
                 onClick = onSave,
                 enabled = selectedPackages.isNotEmpty()
             ) {
-                Text("Protect (${selectedPackages.size})")
+                Text("Kilitle (${selectedPackages.size})")
             }
         }
 
@@ -593,7 +593,7 @@ private fun ProtectedAppItem(
         },
         supportingContent = {
             Text(
-                text = "Protected",
+                text = "Kilitli",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
@@ -624,7 +624,7 @@ private fun ProtectedAppItem(
             IconButton(onClick = onUnlock) {
                 Icon(
                     imageVector = Icons.Outlined.LockOpen,
-                    contentDescription = "Unlock ${appName ?: "app"}",
+                    contentDescription = "${appName ?: "uygulama"} kilidini aç",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -811,7 +811,7 @@ private fun PermissionWarningBanner(
         ) {
             Icon(
                 imageVector = Icons.Rounded.Warning,
-                contentDescription = "Warning",
+                contentDescription = "Uyarı",
                 tint = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.size(28.dp)
             )

@@ -32,7 +32,7 @@ fun UsageStatsPermission(
         ),
         title = {
             Text(
-                text = "Grant Usage Stats Permission",
+                text = "Kullanım İstatistikleri İznini Ver",
                 style = MaterialTheme.typography.titleLarge
             )
         },
@@ -42,12 +42,12 @@ fun UsageStatsPermission(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Text(
-                    text = "You've enabled Usage Stats mode, but the app requires Uage access permission to function properly.",
+                    text = "Kullanım İstatistikleri modunu etkinleştirdiniz, ancak uygulamanın düzgün çalışması için kullanım erişimi izni gerekiyor.",
                     textAlign = TextAlign.Center
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "Press 'Grant Permission' to open the settings and grant the necessary permissions.",
+                    text = "Ayarları açıp gerekli izinleri vermek için 'İzin Ver'e basın.",
                     textAlign = TextAlign.Start,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -55,12 +55,12 @@ fun UsageStatsPermission(
         },
         confirmButton = {
             FilledTonalButton(onClick = onOpenSettings) {
-                Text("Grant Permission")
+                Text("İzin Ver")
             }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) {
-                Text("Cancel")
+                Text("İptal")
             }
         }
     )

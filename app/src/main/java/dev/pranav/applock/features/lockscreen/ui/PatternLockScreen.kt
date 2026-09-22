@@ -111,7 +111,7 @@ fun PatternLockScreen(
                         ) {
                             Text(
                                 text = if (!fromMainActivity && !lockedAppName.isNullOrEmpty())
-                                    "Continue to $lockedAppName"
+                                    "$lockedAppName uygulamasına devam et"
                                 else
                                     stringResource(R.string.enter_pattern_to_continue),
                                 style = MaterialTheme.typography.titleMedium,
@@ -183,7 +183,7 @@ fun PatternLockScreen(
                     ) {
                         Text(
                             text = if (!fromMainActivity && !lockedAppName.isNullOrEmpty())
-                                "Continue to $lockedAppName"
+                                "$lockedAppName uygulamasına devam et"
                             else
                                 stringResource(R.string.enter_pattern_to_continue),
                             style = MaterialTheme.typography.headlineMedium,
@@ -252,7 +252,7 @@ fun PatternLockScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Close",
+                        contentDescription = "Kapat",
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }

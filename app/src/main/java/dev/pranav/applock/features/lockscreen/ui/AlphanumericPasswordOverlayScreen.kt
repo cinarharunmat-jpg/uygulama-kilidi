@@ -94,7 +94,7 @@ fun AlphanumericPasswordOverlayScreen(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Close",
+                        contentDescription = "Kapat",
                         tint = MaterialTheme.colorScheme.onSurface
                     )
                 }
@@ -111,7 +111,7 @@ fun AlphanumericPasswordOverlayScreen(
             ) {
                 Text(
                     text = if (!fromMainActivity && !lockedAppName.isNullOrEmpty())
-                        "Continue to $lockedAppName"
+                        "$lockedAppName uygulamasına devam et"
                     else
                         stringResource(R.string.enter_password_to_continue),
                     style = MaterialTheme.typography.headlineMediumEmphasized,

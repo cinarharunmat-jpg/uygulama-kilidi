@@ -130,19 +130,19 @@ fun TriggerExclusionsScreen(
     if (showManualAddDialog.value) {
         AlertDialog(
             onDismissRequest = { showManualAddDialog.value = false },
-            title = { Text("Add Package Manually") },
+            title = { Text("Paketi Elle Ekle") },
             text = {
                 Column {
                     Text(
-                        text = "Enter the package name of the app you want to exclude:",
+                        text = "Hariç tutmak istediğiniz uygulamanın paket adını girin:",
                         style = MaterialTheme.typography.bodyMedium,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
                     OutlinedTextField(
                         value = manualPackageName,
                         onValueChange = viewModel::updateManualPackageName,
-                        label = { Text("Package Name") },
-                        placeholder = { Text("com.example.app") },
+                        label = { Text("Paket Adı") },
+                        placeholder = { Text("com.ornek.uygulama") },
                         modifier = Modifier.fillMaxWidth(),
                         singleLine = true
                     )
@@ -155,10 +155,10 @@ fun TriggerExclusionsScreen(
                         showManualAddDialog.value = false
                     },
                     enabled = manualPackageName.isNotBlank()
-                ) { Text("Add") }
+                ) { Text("Ekle") }
             },
             dismissButton = {
-                TextButton(onClick = { showManualAddDialog.value = false }) { Text("Cancel") }
+                TextButton(onClick = { showManualAddDialog.value = false }) { Text("İptal") }
             }
         )
     }
@@ -190,7 +190,7 @@ private fun SearchTopBar(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Geri")
                 }
                 Text(
                     text = title,
@@ -198,7 +198,7 @@ private fun SearchTopBar(
                     modifier = Modifier.weight(1f)
                 )
                 IconButton(onClick = onAdd) {
-                    Icon(Icons.Default.Add, contentDescription = "Add package manually")
+                    Icon(Icons.Default.Add, contentDescription = "Paketi elle ekle")
                 }
             }
 
@@ -211,7 +211,7 @@ private fun SearchTopBar(
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = onSearchQueryChange,
-                    placeholder = { Text("Search apps or package names...") },
+                    placeholder = { Text("Uygulama veya paket adı ara...") },
                     leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
