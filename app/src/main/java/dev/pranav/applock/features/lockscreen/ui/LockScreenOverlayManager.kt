@@ -3,7 +3,9 @@ package dev.pranav.applock.features.lockscreen.ui
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.PixelFormat
+import android.view.View
 import android.view.WindowManager
 import androidx.activity.OnBackPressedDispatcher
 import androidx.activity.OnBackPressedDispatcherOwner
@@ -38,6 +40,15 @@ class LockScreenOverlayManager(private val context: Context):
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     private var composeView: ComposeView? = null
 
+    // 2026-09-22: Harun'un fark ettiği "kilitlenen uygulama 1 saniyeliğine görünüyor" sorunu için.
+    // Neden: Compose ağacının kurulması (setContent) + ilk ölçüm/çizim, ComposeView'in
+    // WindowManager'a eklenmesinden ÖNCE ve SONRA gerçek bir gecikme yaratıyor -- kilitli
+    // uygulamanın penceresi bu boşlukta görünür kalıyor. Çözüm: Compose'a hiç dokunmadan, düz
+    // (tamamen opak) bir View'ı EN ÖNCE ekliyoruz -- bunun eklenip çizilmesi neredeyse anlık,
+    // çünkü ölçüm/kompozisyon maliyeti yok. Asıl PIN ekranı (ComposeView) hazır olunca onun
+    // ÜZERİNE eklenir (WindowManager aynı pencere tipinde sonradan eklenen view'ı üstte gösterir).
+    private var instantBlockerView: View? = null
+
     // Lifecycle setup
     private val lifecycleRegistry = LifecycleRegistry(this)
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
@@ -52,6 +63,17 @@ class LockScreenOverlayManager(private val context: Context):
         removeOverlay()
     }
 
+    private fun blockerParams() = WindowManager.LayoutParams(
+        WindowManager.LayoutParams.MATCH_PARENT,
+        WindowManager.LayoutParams.MATCH_PARENT,
+        WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY,
+        WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                WindowManager.LayoutParams.FLAG_SECURE or
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+        PixelFormat.OPAQUE
+    )
+
     fun showOverlay(
         lockedPackageName: String,
         triggeringPackageName: String,
@@ -59,6 +81,18 @@ class LockScreenOverlayManager(private val context: Context):
         onExit: () -> Unit
     ) {
         if (composeView != null) return
+
+        // 1. AŞAMA: Compose'a hiç dokunmadan, düz opak bir View'ı hemen ekle -- kilitli uygulamanın
+        // altta görünme süresini en aza indirir (bkz. instantBlockerView açıklaması yukarıda).
+        if (instantBlockerView == null) {
+            val blocker = View(context).apply { setBackgroundColor(Color.BLACK) }
+            try {
+                windowManager.addView(blocker, blockerParams())
+                instantBlockerView = blocker
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
 
         if (!isStateRestored) {
             savedStateRegistryController.performRestore(null)
@@ -266,6 +300,14 @@ class LockScreenOverlayManager(private val context: Context):
                 e.printStackTrace()
             }
             composeView = null
+        }
+        instantBlockerView?.let {
+            try {
+                windowManager.removeView(it)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            instantBlockerView = null
         }
     }
 }

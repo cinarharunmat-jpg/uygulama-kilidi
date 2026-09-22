@@ -100,6 +100,9 @@ class AppLockAccessibilityService : AccessibilityService() {
                 feedbackType = AccessibilityServiceInfo.FEEDBACK_GENERIC
                 packageNames = null
                 flags = flags or AccessibilityServiceInfo.FLAG_RETRIEVE_INTERACTIVE_WINDOWS
+                // Kilit ekranı gecikmesini en aza indirmek için olay gruplamayı (batching) kapat --
+                // her olay ANINDA gelsin, 100ms bekletilmesin (2026-09-22, "1 saniyelik görünme" fix'i).
+                notificationTimeout = 0
             }
 
             Log.d(TAG, "Accessibility service connected")
@@ -332,22 +335,23 @@ class AppLockAccessibilityService : AccessibilityService() {
 
         LogUtils.d(TAG, "Showing overlay for: $packageName")
 
-        mainHandler.post {
-            AppLockManager.isLockScreenShown.set(true)
-            overlayManager?.showOverlay(
-                lockedPackageName = packageName,
-                triggeringPackageName = triggeringPackage,
-                onUnlock = {
-                    AppLockManager.isLockScreenShown.set(false)
-                    AppLockManager.unlockApp(packageName)
-                },
-                onExit = {
-                    performGlobalAction(GLOBAL_ACTION_HOME)
-                    Thread.sleep(200)
-                    AppLockManager.isLockScreenShown.set(false)
-                }
-            )
-        }
+        // NOT (2026-09-22): eskiden mainHandler.post{} ile ertelenirdi -- onAccessibilityEvent
+        // zaten ana iş parçacığında çalıştığı için bu, kuyruğun SONUNA atlayıp gereksiz gecikme
+        // yaratıyordu ("1 saniyelik görünme" şikayetinin bir parçası). Doğrudan çağırmak daha hızlı.
+        AppLockManager.isLockScreenShown.set(true)
+        overlayManager?.showOverlay(
+            lockedPackageName = packageName,
+            triggeringPackageName = triggeringPackage,
+            onUnlock = {
+                AppLockManager.isLockScreenShown.set(false)
+                AppLockManager.unlockApp(packageName)
+            },
+            onExit = {
+                performGlobalAction(GLOBAL_ACTION_HOME)
+                Thread.sleep(200)
+                AppLockManager.isLockScreenShown.set(false)
+            }
+        )
     }
 
     //private fun showLockScreenOverlay(packageName: String, triggeringPackage: String) {
