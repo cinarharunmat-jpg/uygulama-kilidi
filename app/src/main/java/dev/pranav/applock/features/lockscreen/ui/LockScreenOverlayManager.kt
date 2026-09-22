@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.lifecycle.Lifecycle
@@ -32,6 +33,22 @@ import dev.pranav.applock.core.utils.appLockRepository
 import dev.pranav.applock.data.repository.PreferencesRepository
 import dev.pranav.applock.services.AppLockManager
 import dev.pranav.applock.ui.theme.AppLockTheme
+
+// 2026-09-22: Harun'un isteği -- kilit ekranındaki başlıkta GERÇEK uygulama adı (ör. "WhatsApp
+// Business") görünmesin; biri ekrana bakarsa hangi uygulamayı koruduğumuzu anlamasın. Rastgele bir
+// reklam/oyun ekranı gibi görünen, hiçbir gerçek uygulamayla ilgisi olmayan bir başlık seçiliyor.
+private val DECOY_TITLES = listOf(
+    "Ödülünüzü Almak İçin Devam Edin",
+    "Bonus Turu'na Hoş Geldiniz",
+    "Seviye 12'ye Devam Et",
+    "Reklamınız Birazdan Başlıyor",
+    "Günlük Ödülünü Topla",
+    "Google Play Hizmetleri Doğrulanıyor",
+    "Yeni Bölüm Açıldı",
+    "Elmas Kasasını Aç"
+)
+
+private fun randomDecoyTitle(): String = DECOY_TITLES.random()
 
 @SuppressLint("ViewConstructor")
 class LockScreenOverlayManager(private val context: Context):
@@ -115,13 +132,10 @@ class LockScreenOverlayManager(private val context: Context):
                             color = MaterialTheme.colorScheme.background
                         ) {
                             val appLockRepository = context.appLockRepository()
-                            val appName = try {
-                                val pm = context.packageManager
-                                pm.getApplicationLabel(pm.getApplicationInfo(lockedPackageName, 0))
-                                    .toString()
-                            } catch (_: Exception) {
-                                "App"
-                            }
+                            // Gerçek uygulama adı yerine sahte/alakasız bir başlık gösteriliyor
+                            // (bkz. randomDecoyTitle üstteki açıklama) -- ekrana bakan biri hangi
+                            // uygulamanın kilitli olduğunu anlayamasın.
+                            val appName = remember { randomDecoyTitle() }
 
                             val onPinAttemptCallback = { pin: String ->
                                 val isValid = appLockRepository.validatePassword(pin)
