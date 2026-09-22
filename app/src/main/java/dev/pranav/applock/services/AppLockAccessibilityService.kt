@@ -136,25 +136,31 @@ class AppLockAccessibilityService : AccessibilityService() {
             return
         }
 
-        if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED || event.eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
-            if (event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED && event.text == packageManager.getApplicationInfo(
-                    event.packageName.toString(),
-                    0
-                ).loadLabel(packageManager)
-            ) {
-                Log.d(TAG, "Ignoring recents bug event: ${event.text}")
-                return
-            }
-            if (!isRecentsOpen && isRecentlyOpened(event)) {
-                isRecentsOpen = true
-                Log.d(TAG, "Recents opened")
-            }
-            handleWindowStateChanged(event)
-        } else {
+        if (event.eventType != AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED &&
+            event.eventType != AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED
+        ) {
             return
         }
 
         val packageName = event.packageName?.toString() ?: return
+
+        // 2026-09-22: "recents bug" kontrolü packageManager.getApplicationInfo(...).loadLabel(...)
+        // ile senkron bir binder çağrısı yapıyordu -- HER pencere değişikliğinde (sistemdeki tüm
+        // uygulama geçişlerinde), yalnızca kilitli uygulamalar için gerekliyken. Kilit ekranı
+        // gecikmesini azaltmak için: yalnızca kilitli bir uygulamaysa bu pahalı çağrıyı yap.
+        val isLockedPackage = packageName in appLockRepository.getLockedApps()
+        if (isLockedPackage &&
+            event.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED &&
+            event.text == packageManager.getApplicationInfo(packageName, 0).loadLabel(packageManager)
+        ) {
+            Log.d(TAG, "Ignoring recents bug event: ${event.text}")
+            return
+        }
+        if (!isRecentsOpen && isRecentlyOpened(event)) {
+            isRecentsOpen = true
+            Log.d(TAG, "Recents opened")
+        }
+        handleWindowStateChanged(event)
 
         // Skip if device is locked or app is excluded
         if (!isValidPackageForLocking(packageName)) {

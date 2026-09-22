@@ -82,3 +82,8 @@ Commit: `4c2b7ab`. Ders: bundan sonra artık HER install-r'dan sonra elle adb d�
 
 Sonuç: Harun bir kez Samsung'un ayarından Instagram'ı gizler → o andan sonra Instagram'ı yalnızca Kasa'dan bulup PIN'le açabilir; simgesi hiçbir yerde görünmez. Commit `07eb0a3`.
 **Kısıtlar (dürüstçe):** Sistem Ayarları > Uygulamalar (tüm uygulamalar listesi) içinden hâlâ görülüp açılabilir — bu Samsung'un sınırı, bizim değil; "hiç kimse hiçbir şekilde bulamaz" garantisi verilemez, sadece "rastgele bakan biri ana ekranda/çekmecede görmez" garantisi verilebilir.
+
+## ✅ AÇILIŞ GECİKMESİ (~1sn -> ~250ms) — ölçülerek düzeltildi (2026-09-22)
+Harun: "WhatsApp Business'a tıklayınca 1 saniyeliğine programı gösteriyor." Kök neden: Compose ağacının kurulması + ilk çizimi, ComposeView WindowManager'a eklenmeden önce/sonra gerçek bir gecikme yaratıyordu; ayrıca gereksiz `mainHandler.post{}` (zaten ana iş parçacığındaydık) kuyruğun sonuna atlıyordu; `notificationTimeout=100ms` olay gruplaması da ekliyordu.
+Üç düzeltme: (1) `LockScreenOverlayManager`'a Compose'a hiç dokunmadan anında eklenen düz/opak bir `View` (instantBlockerView) — asıl PIN ekranı hazır olana kadar altını kapatıyor; (2) `notificationTimeout` 0'a çekildi (XML + runtime); (3) gereksiz `mainHandler.post{}` kaldırıldı.
+**Ölçüldü** (logcat `WindowManager: Changing focus` zaman damgaları): hedef uygulama görünür olduğu an → Kasa'nın engelleyicisi devreye girdiği an = **248ms**. Sıfır değil (Erişilebilirlik Servisi tekniğinin fiziksel sınırı — olay üretilip iletilmesi gerekiyor) ama Harun'un gözlemlediği ~1 saniyeden çeyrek saniyeye indi. Commit `4b5b133`. Harun'a dürüstçe böyle anlatılacak: "sıfır değil ama artık göz ucuyla bile zor fark edilir."
