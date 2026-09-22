@@ -41,6 +41,7 @@ Bu adım atlanırsa kilit ekranı hiç tetiklenmez. İlk gerçek cihaz testinde 
 4. Sonuçları/kararları bu dosyaya ve LOG.md'ye ekle.
 
 ## Log
+- 2026-09-22 (gece): kilitleme bug'ı kalıcı düzeltildi, gecikme ~250-290ms'e indi, kilit ekranında gerçek uygulama adı gizlendi, Samsung gizleme adımları doğrulandı. Harun onayladı: "tamamdır, halloldu". Açık kalan: Vault özelliği cihazda test edilmedi.
 - 2026-09-22: Araştırma + fork + yerel kurulum tamamlandı, henüz derleme/cihaz testi yapılmadı.
 - 2026-09-22: İlk derleme + kurulum + gerçek cihaz testi (S23 Ultra, Android 16). `local.properties` içindeki ters eğik çizgi hatası düzeltildi. Kısıtlı-ayarlar adımı yapıldı, Erişilebilirlik izni açıldı, Instagram/YouTube kilitlendi ve DOĞRULANDI (Harun: "denedim, çalıştı").
 - 2026-09-22: Pil ayarı doğrulandı/iyileştirildi — doze beyaz listesi + standby bucket EXEMPTED (adb ile).
@@ -91,3 +92,10 @@ Harun: "WhatsApp Business'a tıklayınca 1 saniyeliğine programı gösteriyor."
 **Devam (Harun "daha da azalt" dedi):** `handleAccessibilityEvent`'te HER pencere değişikliğinde (sistemdeki TÜM uygulama geçişlerinde) çalışan gereksiz bir `packageManager.getApplicationInfo().loadLabel()` çağrısı (senkron binder) bulundu, yalnızca kilitli paketler için çalışacak şekilde taşındı. Commit `b1b5bc0`.
 **Ayrıntılı ölçüm/ayrıştırma** (tek çalıştırma, tam log): WhatsApp görünür (12:47:58.688) → `checkAndLockApp` tetiklendi (12:47:58.926, **238ms** — bu, sistemin kendi olayı üretip iletmesi, bizim kontrolümüz dışında) → "Showing overlay" logu 1ms sonra (mainHandler.post kaldırma işe yaradı, gecikme yok) → engelleyici pencere odağı 53ms sonra (View oluşturma + WindowManager IPC) → toplam **~293ms**.
 **Sonuç: gecikmenin ~%80'i artık Android'in kendi olay dağıtım gecikmesi, bizim kodumuz değil.** Kalan ~50ms'yi de kazanmak için tek yol: sürekli açık/görünmez bir kaplama penceresi önceden hazırda tutmak (addView yerine yalnızca görünürlük değiştirmek) — bu, ~50ms daha kazandırır ama sürekli ekranın üzerinde (görünmez de olsa) bir pencere olması ekran kaydı/bölünmüş ekran gibi senaryolarla öngörülemeyen etkileşim riski taşıyor. **Harun'a sorulmadan yapılmadı**, onaylarsa ayrı adım olarak eklenecek.
+
+## ✅ SAHTE BAŞLIK (gerçek uygulama adı gizleniyor) + Samsung "Uygulamaları gizle" doğrulandı (2026-09-22)
+Harun iki şey istedi: (1) kilit ekranındaki "WhatsApp Business uygulamasına devam et" yazısı yerine alakasız/reklam-oyun gibi görünen bir başlık, (2) Samsung'un uygulama gizleme özelliğinin TAM yerini (Türkçe metinleriyle doğrulanmış).
+
+**1) Sahte başlık — eklendi:** `LockScreenOverlayManager.kt`'de gerçek `packageManager.getApplicationLabel(...)` çağrısı kaldırıldı, yerine `DECOY_TITLES` listesinden rastgele seçilen bir başlık geliyor ("Bonus Turu'na Hoş Geldiniz", "Seviye 12'ye Devam Et" vb. — 8 seçenek). Yalnızca üçüncü taraf uygulama kilidinde (Kasa'nın kendi PIN ekranı zaten jenerik). Commit `a50f883`.
+
+**2) Samsung "Uygulamaları gizle" — telefonda canlı gezinilerek DOĞRULANDI (tahmin değil):** Ana ekranda boş bir yere uzun bas → alttaki **Ayarlar** (4 seçenekten biri: Duvar kağıdı ve stil / Temalar / Widgetlar / **Ayarlar**) → **Ana ekran ayarları** ekranı açılır → aşağı kaydır → **"Uygulamaları Ana ekranda ve Uygulamalar ekranında gizle"** → açılan "Uygulamaları seç" ekranında (sağ üstte arama ikonu var) istenen uygulama işaretlenip sağ üstteki **Tamam**'a basılır. Hiçbir uygulama işaretlenmeden geri çıkıldı (karar Harun'a bırakıldı).
