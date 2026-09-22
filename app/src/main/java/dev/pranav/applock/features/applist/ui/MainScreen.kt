@@ -432,7 +432,7 @@ private fun EmptyDashboardState(modifier: Modifier = Modifier) {
         )
         Spacer(modifier = Modifier.height(24.dp))
         Text(
-            text = "No Protected Apps",
+            text = "Kilitli Uygulama Yok",
             style = MaterialTheme.typography.headlineSmall,
             color = MaterialTheme.colorScheme.onSurface
         )

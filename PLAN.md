@@ -42,3 +42,8 @@ Bu adım atlanırsa kilit ekranı hiç tetiklenmez. İlk gerçek cihaz testinde 
 
 ## Log
 - 2026-09-22: Araştırma + fork + yerel kurulum tamamlandı, henüz derleme/cihaz testi yapılmadı.
+- 2026-09-22: İlk derleme + kurulum + gerçek cihaz testi (S23 Ultra, Android 16). `local.properties` içindeki ters eğik çizgi hatası düzeltildi. Kısıtlı-ayarlar adımı yapıldı, Erişilebilirlik izni açıldı, Instagram/YouTube kilitlendi ve DOĞRULANDI (Harun: "denedim, çalıştı").
+- 2026-09-22: Pil ayarı doğrulandı/iyileştirildi — doze beyaz listesi + standby bucket EXEMPTED (adb ile).
+- 2026-09-22: 3 algılama yöntemi karşılaştırıldı (kod okunarak) — Erişilebilirlik olay-tabanlı/en hızlı; UsageStats 250ms yoklama; Shizuku 500ms yoklama + ayrı kurulum. Erişilebilirlik (varsayılan seçim) doğru tercih, değiştirilmedi.
+- 2026-09-22: **Tam Türkçeleştirme + yeniden markalama ("Kasa") + özel ikon.** `app_name` → Kasa; `strings.xml`'deki ~200 metin ve Compose ekranlarındaki ~25 sabit İngilizce metin (buton/etiket/contentDescription) Türkçeye çevrildi. Yeni adaptive icon üretildi (`scripts/ikon_uret.py`, Pillow ile programatik: koyu grafit kart + pirinç kasa kadranı + kol), tüm yoğunluklarda (mdpi-xxxhdpi) hem kare hem yuvarlak varyant değiştirildi. Derlendi, kuruldu, ekran görüntüsüyle doğrulandı (Ayarlar > Uygulama bilgileri: "Kasa" adı + yeni ikon görünüyor). GitHub'a push edildi (`44cf6d2`).
+- Bilinmeyen/gelecek: Shizuku ve UsageStats servislerindeki (aktif olmayan) bazı log/hata mesajları hâlâ İngilizce (kullanıcıya görünmez, kasıtlı olarak atlandı). Başka dillerdeki (values-ar) mevcut çeviriye dokunulmadı.

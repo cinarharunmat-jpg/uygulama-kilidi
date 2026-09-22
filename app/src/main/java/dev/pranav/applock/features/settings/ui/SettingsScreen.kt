@@ -232,7 +232,7 @@ fun SettingsScreen(
                         null
                     }
                 }
-                val versionName = packageInfo?.versionName ?: "Unknown"
+                val versionName = packageInfo?.versionName ?: "Bilinmiyor"
                 Text(
                     text = stringResource(R.string.settings_screen_version_template, versionName),
                     style = MaterialTheme.typography.bodyMedium,
@@ -320,7 +320,7 @@ fun SettingsScreen(
                             icon = Timer,
                             title = stringResource(R.string.settings_screen_unlock_duration_title),
                             subtitle = if (unlockTimeDuration > 0) {
-                                if (unlockTimeDuration > 10_000) "Until screen off"
+                                if (unlockTimeDuration > 10_000) "Ekran kapanana kadar"
                                 else stringResource(
                                     R.string.settings_screen_unlock_duration_summary_minutes,
                                     unlockTimeDuration
@@ -388,7 +388,7 @@ fun SettingsScreen(
                                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                     }
                                     context.startActivity(
-                                        Intent.createChooser(shareIntent, "Share audit logs")
+                                        Intent.createChooser(shareIntent, "Güvenlik günlüklerini paylaş")
                                     )
                                 } else {
                                     Toast.makeText(
@@ -412,7 +412,7 @@ fun SettingsScreen(
                                         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                                     }
                                     context.startActivity(
-                                        Intent.createChooser(shareIntent, "Share logs")
+                                        Intent.createChooser(shareIntent, "Günlükleri paylaş")
                                     )
                                 } else {
                                     Toast.makeText(
@@ -425,8 +425,8 @@ fun SettingsScreen(
                         ),
                         ToggleSettingItem(
                             icon = Icons.Default.Troubleshoot,
-                            title = "Logging",
-                            subtitle = "Enable debug logging for troubleshooting",
+                            title = "Günlük Kaydı",
+                            subtitle = "Sorun giderme için hata ayıklama günlüğünü etkinleştir",
                             checked = loggingEnabled,
                             enabled = true,
                             onCheckedChange = { isChecked ->
@@ -725,7 +725,7 @@ fun UnlockTimeDurationDialog(
                                     duration
                                 )
                                 60 -> stringResource(R.string.settings_screen_unlock_duration_dialog_option_hour)
-                                Integer.MAX_VALUE -> "Until Screen Off"
+                                Integer.MAX_VALUE -> "Ekran Kapanana Kadar"
                                 else -> stringResource(
                                     R.string.settings_screen_unlock_duration_summary_minutes,
                                     duration
@@ -906,17 +906,17 @@ fun BackendSelectionItem(
 
 private fun getBackendDisplayName(backend: BackendImplementation): String {
     return when (backend) {
-        BackendImplementation.ACCESSIBILITY -> "Accessibility Service"
-        BackendImplementation.USAGE_STATS -> "Usage Statistics"
-        BackendImplementation.SHIZUKU -> "Shizuku Service"
+        BackendImplementation.ACCESSIBILITY -> "Erişilebilirlik Hizmeti"
+        BackendImplementation.USAGE_STATS -> "Kullanım İstatistikleri"
+        BackendImplementation.SHIZUKU -> "Shizuku Hizmeti"
     }
 }
 
 private fun getBackendDescription(backend: BackendImplementation): String {
     return when (backend) {
-        BackendImplementation.ACCESSIBILITY -> "Standard method that works on most devices"
-        BackendImplementation.USAGE_STATS -> "Experimental method using app usage statistics"
-        BackendImplementation.SHIZUKU -> "Advanced method using Shizuku and internal APIs"
+        BackendImplementation.ACCESSIBILITY -> "Çoğu cihazda çalışan standart yöntem"
+        BackendImplementation.USAGE_STATS -> "Uygulama kullanım istatistiklerini kullanan deneysel yöntem"
+        BackendImplementation.SHIZUKU -> "Shizuku ve dahili API'leri kullanan gelişmiş yöntem"
     }
 }
 
@@ -1015,12 +1015,12 @@ fun LinksSection() {
     val context = LocalContext.current
 
     Column {
-        SectionTitle(text = "Links")
+        SectionTitle(text = "Bağlantılar")
 
         Column {
             SettingsCard(index = 0, listSize = 3) {
                 LinkItem(
-                    title = "Discord Community",
+                    title = "Temel Aldığımız Projenin Discord Topluluğu",
                     icon = Discord,
                     onClick = {
                         val intent = Intent(
@@ -1034,12 +1034,12 @@ fun LinksSection() {
 
             SettingsCard(index = 1, listSize = 3) {
                 LinkItem(
-                    title = "Source Code",
+                    title = "Kaynak Kod",
                     icon = Icons.Outlined.Code,
                     onClick = {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
-                            "https://github.com/aload0/AppLock".toUri()
+                            "https://github.com/cinarharunmat-jpg/uygulama-kilidi".toUri()
                         )
                         context.startActivity(intent)
                     }
@@ -1048,12 +1048,12 @@ fun LinksSection() {
 
             SettingsCard(index = 2, listSize = 3) {
                 LinkItem(
-                    title = "Report Issue",
+                    title = "Sorun Bildir",
                     icon = Icons.Outlined.BugReport,
                     onClick = {
                         val intent = Intent(
                             Intent.ACTION_VIEW,
-                            "https://github.com/aload0/AppLock/issues".toUri()
+                            "https://github.com/cinarharunmat-jpg/uygulama-kilidi/issues".toUri()
                         )
                         context.startActivity(intent)
                     }

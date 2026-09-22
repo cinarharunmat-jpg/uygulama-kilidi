@@ -263,7 +263,7 @@ fun AntiUninstallScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             SearchTopBar(
-                title = "Anti-Uninstall Protection",
+                title = "Kaldırmaya Karşı Koruma",
                 searchQuery = searchQuery,
                 onSearchQueryChange = viewModel::updateSearchQuery,
                 onBack = { navController.navigateUp() },
@@ -310,7 +310,7 @@ fun AntiUninstallScreen(
                 if (protectedNotInList.isNotEmpty()) {
                     item {
                         Text(
-                            text = "Manually Added Packages",
+                            text = "Elle Eklenen Paketler",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.padding(bottom = 4.dp)
@@ -324,7 +324,7 @@ fun AntiUninstallScreen(
                     }
                     item {
                         Text(
-                            text = "Installed Apps",
+                            text = "Kurulu Uygulamalar",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
@@ -391,10 +391,10 @@ fun AntiUninstallScreen(
             title = {
                 Text(
                     text = when (shizukuState) {
-                        ShizukuState.NOT_INSTALLED -> "Shizuku Not Installed"
-                        ShizukuState.NOT_RUNNING -> "Shizuku Not Running"
-                        ShizukuState.PERMISSION_DENIED -> "Permission Required"
-                        else -> "Shizuku Setup"
+                        ShizukuState.NOT_INSTALLED -> "Shizuku Kurulu Değil"
+                        ShizukuState.NOT_RUNNING -> "Shizuku Çalışmıyor"
+                        ShizukuState.PERMISSION_DENIED -> "İzin Gerekli"
+                        else -> "Shizuku Kurulumu"
                     }
                 )
             },
@@ -593,7 +593,7 @@ private fun ManualPackageItem(packageName: String, onToggle: () -> Unit) {
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "Manually added package",
+                    text = "Elle eklenen paket",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

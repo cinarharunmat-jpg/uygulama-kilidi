@@ -225,7 +225,7 @@ fun PatternSetPasswordScreen(
 
                     if (showMismatchError) {
                         Text(
-                            text = "Incorrect Pattern",
+                            text = "Yanlış Desen",
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodySmall,
                             textAlign = TextAlign.Center
@@ -233,7 +233,7 @@ fun PatternSetPasswordScreen(
                     }
                     if (showMinLengthError) {
                         Text(
-                            text = "Patter length should be at least 4",
+                            text = "Desen en az 4 nokta uzunluğunda olmalı",
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodySmall,
                             textAlign = TextAlign.Center
@@ -241,7 +241,7 @@ fun PatternSetPasswordScreen(
                     }
                     if (showInvalidOldPasswordError) {
                         Text(
-                            text = "Incorrect pattern",
+                            text = "Yanlış desen",
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.bodySmall,
                             textAlign = TextAlign.Center
@@ -379,7 +379,7 @@ fun PatternSetPasswordScreen(
                     if (showMinLengthError) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Patter length should be at least 4",
+                            text = "Desen en az 4 nokta uzunluğunda olmalı",
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.labelLarge,
                             textAlign = TextAlign.Center
@@ -389,7 +389,7 @@ fun PatternSetPasswordScreen(
                     if (showInvalidOldPasswordError) {
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
-                            text = "Incorrect pattern",
+                            text = "Yanlış desen",
                             color = MaterialTheme.colorScheme.error,
                             style = MaterialTheme.typography.labelLarge,
                             textAlign = TextAlign.Center

@@ -60,6 +60,9 @@ class AppLockRepository(private val context: Context) {
     fun setLockType(lockType: String) = preferencesRepository.setLockType(lockType)
     fun getLockType(): String = preferencesRepository.getLockType()
 
+    fun setPinLength(length: Int) = preferencesRepository.setPinLength(length)
+    fun getPinLength(): Int = preferencesRepository.getPinLength()
+
     fun setBiometricAuthEnabled(enabled: Boolean) =
         preferencesRepository.setBiometricAuthEnabled(enabled)
 

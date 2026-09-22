@@ -58,6 +58,18 @@ class PreferencesRepository(context: Context) {
         return storedPattern != null && inputPattern == storedPattern
     }
 
+    /** PIN'in kaç haneli olduğunu kaydeder (otomatik açılış için). PIN hash'lenerek saklandığından
+     * (bkz. setPassword) gerçek uzunluk ayrıca burada tutulmak zorunda -- hash'ten geri okunamaz. */
+    fun setPinLength(length: Int) {
+        settingsPrefs.edit(commit = true) { putInt(KEY_PIN_LENGTH, length) }
+    }
+
+    /** Bilinmiyorsa -1 döner (örn. bu özellik eklenmeden önce PIN belirlenmişse); bu durumda
+     * ilk başarılı manuel doğrulamada handleKeypadSpecialButtonLogic uzunluğu kendiliğinden kaydeder. */
+    fun getPinLength(): Int {
+        return settingsPrefs.getInt(KEY_PIN_LENGTH, -1)
+    }
+
     fun setLockType(lockType: String) {
         settingsPrefs.edit(commit = true) { putString(KEY_LOCK_TYPE, lockType) }
     }
@@ -190,6 +202,7 @@ class PreferencesRepository(context: Context) {
         private const val KEY_AUTO_UNLOCK = "auto_unlock"
         private const val KEY_SHOW_SYSTEM_APPS = "show_system_apps"
         private const val KEY_LOCK_TYPE = "lock_type"
+        private const val KEY_PIN_LENGTH = "pin_length"
 
         private const val DEFAULT_PROTECT_ENABLED = true
         private const val DEFAULT_UNLOCK_DURATION = 0

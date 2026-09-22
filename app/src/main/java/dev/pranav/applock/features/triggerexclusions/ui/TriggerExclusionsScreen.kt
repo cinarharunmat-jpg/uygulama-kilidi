@@ -50,7 +50,7 @@ fun TriggerExclusionsScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             SearchTopBar(
-                title = "Trigger Exclusions",
+                title = "Tetikleme İstisnaları",
                 searchQuery = searchQuery,
                 onSearchQueryChange = viewModel::updateSearchQuery,
                 onBack = { navController.navigateUp() },
@@ -70,7 +70,7 @@ fun TriggerExclusionsScreen(
         ) {
             item {
                 Text(
-                    text = "Select apps that will NOT trigger locks when switching to locked apps.",
+                    text = "Kilitli uygulamalara geçerken kilidi TETİKLEMEYECEK uygulamaları seçin.",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -94,7 +94,7 @@ fun TriggerExclusionsScreen(
                 if (excludedNotInList.isNotEmpty()) {
                     item {
                         Text(
-                            text = "Manually Added Packages",
+                            text = "Elle Eklenen Paketler",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.padding(bottom = 4.dp)
@@ -108,7 +108,7 @@ fun TriggerExclusionsScreen(
                     }
                     item {
                         Text(
-                            text = "Installed Apps",
+                            text = "Kurulu Uygulamalar",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
@@ -294,7 +294,7 @@ private fun ManualPackageItem(packageName: String, onToggle: () -> Unit) {
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "Manually added package",
+                    text = "Elle eklenen paket",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

@@ -767,13 +767,38 @@ fun KeypadSection(
             }
         }
 
-    val onDigitKeyClick = remember(passwordState, minLength, onPasswordChange) {
+    val onDigitKeyClick = remember(
+        passwordState,
+        minLength,
+        onPasswordChange,
+        fromMainActivity,
+        onAuthSuccess,
+        onPinAttempt,
+        context,
+        onPinIncorrect
+    ) {
         { key: String ->
             addDigitToPassword(
                 passwordState,
                 key,
                 onPasswordChange
             )
+            // Kayıtlı PIN uzunluğu biliniyorsa ve tam o kadar hane girildiyse, "ilerle"
+            // düğmesine basmaya gerek kalmadan otomatik olarak doğrulamayı dene.
+            val knownPinLength = context.appLockRepository().getPinLength()
+            if (knownPinLength > 0 && passwordState.value.length == knownPinLength) {
+                handleKeypadSpecialButtonLogic(
+                    key = "proceed",
+                    passwordState = passwordState,
+                    minLength = minLength,
+                    fromMainActivity = fromMainActivity,
+                    onAuthSuccess = onAuthSuccess,
+                    onPinAttempt = onPinAttempt,
+                    context = context,
+                    onPasswordChange = onPasswordChange,
+                    onPinIncorrect = onPinIncorrect
+                )
+            }
         }
     }
 
@@ -890,7 +915,25 @@ private fun handleKeypadSpecialButtonLogic(
     val appLockRepository = context.appLockRepository()
 
     when (key) {
-        "0" -> addDigitToPassword(passwordState, key, onPasswordChange)
+        "0" -> {
+            addDigitToPassword(passwordState, key, onPasswordChange)
+            // Rakam düğmeleriyle aynı otomatik açılış davranışı: "0" bu ayrı dal üzerinden
+            // eklendiği için (bkz. onDigitKeyClick) kontrol burada da tekrarlanmalı.
+            val knownPinLength = appLockRepository.getPinLength()
+            if (knownPinLength > 0 && passwordState.value.length == knownPinLength) {
+                handleKeypadSpecialButtonLogic(
+                    key = "proceed",
+                    passwordState = passwordState,
+                    minLength = minLength,
+                    fromMainActivity = fromMainActivity,
+                    onAuthSuccess = onAuthSuccess,
+                    onPinAttempt = onPinAttempt,
+                    context = context,
+                    onPasswordChange = onPasswordChange,
+                    onPinIncorrect = onPinIncorrect
+                )
+            }
+        }
         "backspace" -> {
             if (passwordState.value.isNotEmpty()) {
                 passwordState.value = passwordState.value.dropLast(1)
@@ -909,6 +952,11 @@ private fun handleKeypadSpecialButtonLogic(
             if (passwordState.value.length >= minLength) {
                 if (fromMainActivity) {
                     if (appLockRepository.validatePassword(passwordState.value)) {
+                        // PIN hash'lenerek saklanıyor, gerçek uzunluk buradan ayrıca kaydedilmeli
+                        // ki bir sonraki girişte otomatik açılış (aşağıdaki addDigitToPassword) çalışsın.
+                        if (appLockRepository.getPinLength() != passwordState.value.length) {
+                            appLockRepository.setPinLength(passwordState.value.length)
+                        }
                         onAuthSuccess()
                     } else {
                         passwordState.value = ""
@@ -920,7 +968,11 @@ private fun handleKeypadSpecialButtonLogic(
                 } else {
                     onPinAttempt?.let { attempt ->
                         val pinWasCorrectAndProcessed = attempt(passwordState.value)
-                        if (!pinWasCorrectAndProcessed) {
+                        if (pinWasCorrectAndProcessed) {
+                            if (appLockRepository.getPinLength() != passwordState.value.length) {
+                                appLockRepository.setPinLength(passwordState.value.length)
+                            }
+                        } else {
                             passwordState.value = ""
                             if (!appLockRepository.shouldDisableHaptics()) {
                                 vibrate(context, 100)

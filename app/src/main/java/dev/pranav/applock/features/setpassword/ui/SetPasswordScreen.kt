@@ -350,6 +350,7 @@ fun SetPasswordScreen(
                                         else -> {
                                             if (passwordState == confirmPasswordState) {
                                                 appLockRepository?.setPassword(passwordState)
+                                                appLockRepository?.setPinLength(passwordState.length)
                                                 Toast.makeText(
                                                     context,
                                                     context.getString(R.string.password_set_successfully_toast),
@@ -598,6 +599,7 @@ fun SetPasswordScreen(
                                             if (passwordState == confirmPasswordState) {
                                                 appLockRepository?.setLockType(PreferencesRepository.LOCK_TYPE_PIN)
                                                 appLockRepository?.setPassword(passwordState)
+                                                appLockRepository?.setPinLength(passwordState.length)
                                                 Toast.makeText(
                                                     context,
                                                     context.getString(R.string.password_set_successfully_toast),
