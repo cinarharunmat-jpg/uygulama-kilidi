@@ -582,6 +582,15 @@ private fun ProtectedAppItem(
 ) {
     val context = LocalContext.current
 
+    fun launchApp() {
+        // Simgesi ana ekrandan gizlenmiş olsa bile buradan açılabilir. Kilit mekanizması
+        // (AppLockAccessibilityService) NASIL açıldığına bakmaksızın çalışır -- yani bu şekilde
+        // açılsa da, kilit ekranı normalde olduğu gibi yine çıkar (çift koruma, kasıtlı).
+        context.packageManager.getLaunchIntentForPackage(appInfo.packageName)?.let {
+            context.startActivity(it)
+        }
+    }
+
     var appName by remember(appInfo) { mutableStateOf<String?>(null) }
     var icon by remember(appInfo) { mutableStateOf<ImageBitmap?>(null) }
 
@@ -606,7 +615,7 @@ private fun ProtectedAppItem(
         },
         supportingContent = {
             Text(
-                text = "Kilitli",
+                text = "Kilitli — açmak için dokun",
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.primary,
                 maxLines = 1,
@@ -637,7 +646,7 @@ private fun ProtectedAppItem(
             IconButton(onClick = onUnlock) {
                 Icon(
                     imageVector = Icons.Outlined.LockOpen,
-                    contentDescription = "${appName ?: "uygulama"} kilidini aç",
+                    contentDescription = "${appName ?: "uygulama"} kilitli listeden çıkar",
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -649,6 +658,9 @@ private fun ProtectedAppItem(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
             .clip(RoundedCornerShape(16.dp))
+            // Simgesi ana ekrandan gizlenmiş uygulamayı buradan doğrudan açmak için: satıra
+            // dokunmak uygulamayı başlatır (kilit ekranı yine de normal şekilde devreye girer).
+            .clickable(onClick = ::launchApp)
     )
 }
 
