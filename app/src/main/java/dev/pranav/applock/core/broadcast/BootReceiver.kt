@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.core.content.ContextCompat
 import dev.pranav.applock.core.utils.LogUtils
 import dev.pranav.applock.core.utils.appLockRepository
+import dev.pranav.applock.core.utils.repairAccessibilityServiceIfNeeded
 import dev.pranav.applock.data.repository.BackendImplementation
 import dev.pranav.applock.services.AppLockAccessibilityService
 import dev.pranav.applock.services.ShizukuAppLockService
@@ -18,7 +19,14 @@ class BootReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context, intent: Intent) {
         val repository = context.appLockRepository()
-        
+
+        // Erişilebilirlik yöntemi normal bir Service DEĞİL -- startService() ile geri açılamaz
+        // (aşağıdaki AppLockServiceStarter çağrısı bu yöntem için etkisiz kalır). Android her
+        // APK güncellemesinden sonra izni kapattığı için burada AYRICA onarılması gerekiyor.
+        if (repository.getBackendImplementation() == BackendImplementation.ACCESSIBILITY) {
+            context.repairAccessibilityServiceIfNeeded()
+        }
+
         when (intent.action) {
             Intent.ACTION_MY_PACKAGE_REPLACED -> {
                 Log.d(TAG, "App package replaced, clearing old logs and showing donate link")

@@ -24,6 +24,46 @@ fun Context.isAccessibilityServiceEnabled(): Boolean {
     return false
 }
 
+/**
+ * ANDROID KENDİLİĞİNDEN KAPATABİLİR: her APK güncellemesinden sonra (ve bazı OEM'lerde arka
+ * planda öldürülünce) sistem Erişilebilirlik Hizmeti iznini otomatik kapatıyor -- bu, normal bir
+ * Service gibi kod içinden `startService()` ile GERİ AÇILAMAZ (BootReceiver'daki eski deneme bu
+ * yüzden işe yaramıyordu, sistem yalnızca kendi bağladığı/ayarladığı servisi kabul ediyor).
+ *
+ * Bu fonksiyon `WRITE_SECURE_SETTINGS` iznine sahipse (yalnızca `adb shell pm grant ...` ile
+ * verilebilir, normal kurulumda otomatik gelmez) izni doğrudan geri yazar. İzin verilmemişse
+ * SecurityException'ı yutar ve false döner (uygulama çökmez, sadece onarım başarısız olur).
+ */
+fun Context.repairAccessibilityServiceIfNeeded(): Boolean {
+    if (isAccessibilityServiceEnabled()) return true
+
+    val serviceString = "$packageName/$packageName.services.AppLockAccessibilityService"
+    return try {
+        val current = Settings.Secure.getString(
+            contentResolver, Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        )
+        val servicesSet = (current ?: "").split(':').filter { it.isNotBlank() }.toMutableSet()
+        servicesSet.add(serviceString)
+        Settings.Secure.putString(
+            contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES,
+            servicesSet.joinToString(":")
+        )
+        Settings.Secure.putInt(contentResolver, Settings.Secure.ACCESSIBILITY_ENABLED, 1)
+        Log.i("AccessibilityRepair", "Erişilebilirlik hizmeti kendiliğinden onarıldı.")
+        true
+    } catch (e: SecurityException) {
+        Log.w(
+            "AccessibilityRepair",
+            "Onarılamadı -- WRITE_SECURE_SETTINGS izni yok (adb ile verilmemiş): ${e.message}"
+        )
+        false
+    } catch (e: Exception) {
+        Log.e("AccessibilityRepair", "Onarım sırasında beklenmeyen hata", e)
+        false
+    }
+}
+
 fun openAccessibilitySettings(context: Context) {
     val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
